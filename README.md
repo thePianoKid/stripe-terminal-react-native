@@ -1,0 +1,181 @@
+# Stripe Terminal React Native SDK (Beta)
+
+Stripe Terminal enables you to build your own in-person checkout to accept payments in the physical world. Built on Stripe's payments network, Terminal helps you unify your online and offline payment channels. With the Stripe Terminal React Native SDK, you can connect to pre-certified card readers from your React Native app and drive a customized in-store checkout flow.
+
+- [Getting started](#getting-started)
+- [Requirements](#requirements)
+  * [JS](#js)
+  * [Android](#android)
+  * [iOS](#ios)
+- [Installation](#installation)
+- [Example code](#example-code)
+  * [Initialization](#initialization)
+  * [Hooks and events](#hooks-and-events)
+- [Additional docs](#additional-docs)
+- [Contributing](#contributing)
+
+# Getting started
+
+> Note: The below docs are not yet available and will be released as we near open beta
+
+Get started with our [📚 integration guides](https://stripe.com/docs/terminal/payments/setup-sdk?terminal-sdk-platform=react-native) and [example project](#run-the-example-app), or [📘 browse the SDK reference](https://stripe.dev/stripe-terminal-react-native).
+
+Updating to a newer version of the SDK? See our [changelog](https://github.com/stripe/stripe-terminal-react-native/blob/master/CHANGELOG.md).
+
+# Requirements
+
+## JS
+
+- The SDK uses TypeScript features available in Babel version `7.9.0` and above.
+  Alternatively use the `plugin-transform-typescript` plugin in your project.
+
+## Android
+
+- Android 5.0 (API level 21) and above
+- compileSdkVersion = 31
+- targetSdkVersion = 31
+
+## iOS
+
+- Compatible with apps targeting iOS 10 or above.
+
+# Installation
+
+```sh
+yarn add @stripe/stripe-terminal-react-native
+```
+or
+```sh
+npm install @stripe/stripe-terminal-react-native
+```
+# Example code
+
+## Initialization
+
+To initialize Stripe Terminal SDK in your React Native app, use the `StripeTerminalProvider` component in the root component of your application.
+
+First, create an endpoint on your backend server that creates a new connection token via the Stripe Terminal API.
+
+Next, create a token provider that will fetch connection token from your server and provide it to StripeTerminalProvider as a parameter.
+Stripe Terminal SDK will fetch it when it's needed.
+
+```tsx
+// Root.tsx
+import { StripeTerminalProvider } from '@stripe/stripe-terminal-react-native';
+
+function Root() {
+  const fetchTokenProvider = async () => {
+    const response = await fetch(`${API_URL}/connection_token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const { secret } = await response.json();
+    return secret;
+  };
+
+  return (
+    <StripeTerminalProvider
+      logLevel="verbose"
+      tokenProvider={fetchTokenProvider}
+    >
+      <App />
+    </StripeTerminalProvider>
+  );
+}
+```
+
+As a last step, simply call `initialize` method from `useStripeTerminal` hook.
+Please note that `initialize` method must be called from a nested component of `StripeTerminalProvider`.
+
+```tsx
+// App.tsx
+function App() {
+  const { initialize } = useStripeTerminal();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  return <View />;
+}
+```
+
+## Hooks and events
+
+Stripe Terminal SDK provides dedicated hook which exposes bunch of methods and props to be used within your App.
+Additionally, you have access to the internal state of SDK that contains information about the current connection, discovered readers and loading state.
+
+```tsx
+// PaymentScreen.tsx
+
+import { useStripeTerminal } from '@stripe/stripe-terminal-react-native';
+
+export default function PaymentScreen() {
+  const { discoverReaders, connectedReader, discoveredReaders } =
+    useStripeTerminal({
+      onUpdateDiscoveredReaders: (readers) => {
+        // access to discovered readers
+      },
+      onDidChangeConnectionStatus: (status) => {
+        // access to the current connection status
+      },
+    });
+
+  useEffect(() => {
+    const { error } = await discoverReaders({
+      discoveryMethod: 'bluetoothScan',
+      simulated: true,
+    });
+  }, [discoverReaders]);
+
+  return <View />;
+}
+```
+
+In case your app uses `React Class Components` you can use dedicated `withStripeTerminal` Higher-Order-Component.
+Please note that unlike the hooks approach, you need to use event emitter to listen on specific events that comes from SDK.
+
+[Here](https://github.com/stripe/stripe-terminal-react-native/blob/main/src/hooks/useStripeTerminal.tsx#L51) you can find the list of available events to be used within the event emitter.
+
+Example:
+
+```tsx
+// PaymentScreen.tsx
+
+import {
+  withStripeTerminal,
+  WithStripeTerminalProps,
+  CHANGE_CONNECTION_STATUS,
+  Reader,
+} from '@stripe/stripe-terminal-react-native';
+
+class PaymentScreen extends React.Component {
+  componentDidMount() {
+    this.discoverReaders();
+    const eventSubscription = props.emitter.addListener(
+      CHANGE_CONNECTION_STATUS, // didChangeConnectionStatus
+      (status: Reader.ConnectionStatus) => {
+        // access to the current connection status
+      }
+    );
+  }
+  async discoverReaders() {
+    this.props.discoverReaders({
+      discoveryMethod: 'bluetoothScan',
+      simulated,
+    });
+  }
+}
+
+export default withStripeTerminal(PaymentScreen);
+```
+# Additional docs
+
+- [Running the Example Application](/docs/example-applications.md)
+- [Running e2e tests locally](/docs/e2e-tests.md)
+
+# Contributing
+
+See the [contributor guidelines](CONTRIBUTING.md) to learn how to contribute to the repository.

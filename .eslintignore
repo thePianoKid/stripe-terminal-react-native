@@ -1,0 +1,11 @@
+docs
+android
+ios
+lib
+dev-app/ios
+dev-app/android
+package.json
+tsconfig.json
+config.json
+app.json
+tsconfig.build.json
