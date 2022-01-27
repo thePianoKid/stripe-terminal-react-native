@@ -1,12 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { Location, useStripeTerminal } from 'stripe-terminal-react-native';
 import { colors } from '../colors';
 import ListItem from '../components/ListItem';
@@ -15,7 +9,7 @@ export default function LocationListScreen() {
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<any, any>>();
 
-  const { getListLocations, loading } = useStripeTerminal();
+  const { getListLocations } = useStripeTerminal();
   const [list, setList] = useState<Location[]>([]);
 
   useEffect(() => {
@@ -48,7 +42,6 @@ export default function LocationListScreen() {
         ListHeaderComponent={() => (
           <Text style={styles.header}>{list.length} LOCATIONS FOUND</Text>
         )}
-        ListEmptyComponent={() => <>{loading && <ActivityIndicator />}</>}
         renderItem={({ item }) => renderItem(item)}
       />
     </View>
