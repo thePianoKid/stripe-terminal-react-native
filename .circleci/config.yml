@@ -62,9 +62,6 @@ commands:
         type: string
         default: '14.15.0'
     steps:
-      - restore_cache:
-          key: |
-            brew-cache-{{ arch }}-v1
       - attach_workspace:
           at: .
       - run:
@@ -77,6 +74,13 @@ commands:
             echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
             echo 'export JAVA_HOME=$(/usr/libexec/java_home)' >> $BASH_ENV
             source $BASH_ENV
+      - run:
+          name: chown homebrew
+          command: |
+            chown -R distiller /usr/local/Homebrew
+      - restore_cache:
+          key: |
+            brew-cache-{{ arch }}-v1
       - run:
           name: Install node@<<parameters.node_version>>
           command: |
