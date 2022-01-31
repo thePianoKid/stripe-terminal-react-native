@@ -34,7 +34,7 @@ commands:
       - run:
           name: Start example app backend
           background: true
-          command: yarn --cwd example start:server
+          command: yarn --cwd example start:server &
 
   pod_install:
     parameters:
@@ -98,6 +98,11 @@ commands:
             HOMEBREW_NO_AUTO_UPDATE=1 brew install android-commandlinetools >/dev/null
             touch .watchmanconfig
             node -v
+      - save_cache:
+          paths:
+            [/usr/local/Homebrew]
+          key: |
+            brew-cache-{{ arch }}-v1
   android_emulator_start:
     parameters:
       device_name:
