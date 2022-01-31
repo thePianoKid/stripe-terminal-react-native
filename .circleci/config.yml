@@ -101,6 +101,7 @@ commands:
       - save_cache:
           paths:
             - /Users/distiller/Library/Caches/Homebrew
+            - ~/Library/Caches/Homesbrew
           key: |
             brew-cache-{{ arch }}-v1-1
   android_emulator_start:
@@ -248,12 +249,12 @@ jobs:
       - run:
           command: yarn e2e:build:ios:release
           name: build for detox
-      - run:
-          command: yarn e2e:test:ios:release
-          name: test detox
       - save_cache:
           key: ios-build
           paths: [/Users/distiller/project]
+      - run:
+          command: yarn e2e:test:ios:release
+          name: test detox
       - store_artifacts:
           path: ./artifacts
 
