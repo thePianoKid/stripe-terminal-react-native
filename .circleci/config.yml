@@ -29,6 +29,13 @@ commands:
           background: true
           command: xcrun simctl boot "11" || true
 
+  start_server:
+    steps:
+      - run:
+          name: Start example app backend
+          background: true
+          command: yarn --cwd example start:server
+
   pod_install:
     parameters:
       pod_install_directory:
@@ -222,6 +229,8 @@ jobs:
           command: yarn install --frozen-lockfile
           name: yarn install
 
+      - start_server
+
       - run:
           command: |
             rm example/node_modules/react-native/scripts/find-node.sh
@@ -251,6 +260,9 @@ jobs:
           command: yarn install --frozen-lockfile
           name: yarn install
       - android_emulator_start
+
+      - start_server
+
       - run:
           command: yarn e2e:build:android:release
           name: build for detox
