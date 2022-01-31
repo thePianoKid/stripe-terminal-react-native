@@ -62,6 +62,9 @@ commands:
         type: string
         default: '14.15.0'
     steps:
+      - restore_cache:
+          key: |
+            brew-cache-{{ arch }}-v1
       - attach_workspace:
           at: .
       - run:
@@ -74,9 +77,6 @@ commands:
             echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
             echo 'export JAVA_HOME=$(/usr/libexec/java_home)' >> $BASH_ENV
             source $BASH_ENV
-      - restore_cache:
-          key: |
-            brew-cache-{{ arch }}-v1
       - run:
           name: Install node@<<parameters.node_version>>
           command: |
@@ -100,7 +100,8 @@ commands:
             node -v
       - save_cache:
           paths:
-            [/usr/local/Homebrew]
+            - /Users/distiller/Library/Caches/Homebrew
+            - /usr/local/Homebrew
           key: |
             brew-cache-{{ arch }}-v1
   android_emulator_start:
@@ -223,9 +224,6 @@ jobs:
     executor: macos_custom
 
     steps:
-      - attach_workspace:
-          at: .
-
       - setup_macos_executor
 
       - ios_simulator_start
