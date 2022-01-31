@@ -244,12 +244,19 @@ jobs:
 
       - pod_install
 
+      - restore_cache:
+          keys:
+            - ios-build
+
       - run:
           command: yarn e2e:build:ios:release
           name: build for detox
       - run:
           command: yarn e2e:test:ios:release
           name: test detox
+      - save_cache:
+          key: ios-build
+          paths: [/Users/distiller/project]
       - store_artifacts:
           path: ./artifacts
 
