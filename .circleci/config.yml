@@ -248,7 +248,9 @@ jobs:
   e2e-ios:
     executor: macos_custom
     steps:
+      - setup_macos_executor
       - ios_simulator_start
+      - build-ios
       - run:
           command: yarn e2e:test:ios:release
           name: test detox
@@ -256,10 +258,11 @@ jobs:
           path: ./artifacts
 
   e2e-android:
-    executor:
-      name: macos_custom
+    executor: macos_custom
     steps:
+      - setup_macos_executor
       - android_emulator_start
+      - build-android
       - run:
           no_output_timeout: 60m
           command: yarn e2e:test:android:release
@@ -270,6 +273,8 @@ jobs:
   deploy-firebase-android:
     executor: macos_custom
     steps:
+      - setup_macos_executor
+      - build-android
       - run:
           name: "Deploy alpha build to Firebase"
           command: |
@@ -294,10 +299,10 @@ workflows:
             - install-dependencies
       - e2e-android:
           requires:
-            - build-android
+            - install-dependencies
       - e2e-ios:
           requires:
-            - build-ios
+            - install-dependencies
       - deploy-firebase-android:
           requires:
-            - build-android
+            - install-dependencies
