@@ -25,6 +25,25 @@ commands:
       - attach_workspace:
           at: ~/project
 
+  build-android:
+    steps:
+      - run:
+          command: yarn install --frozen-lockfile
+          name: yarn install
+      - run:
+          command: yarn e2e:build:android:release
+          name: build
+
+  build-ios:
+    steps:
+      - run:
+          command: yarn install --frozen-lockfile
+          name: yarn install
+      - pod_install
+      - run:
+          command: yarn e2e:build:ios:release
+          name: build
+
   ios_simulator_start:
     steps:
       - run:
@@ -221,29 +240,6 @@ jobs:
           name: Integration tests
           command: |
             yarn test
-
-  build-android:
-    executor: macos_custom
-    steps:
-      - setup_macos_executor
-      - run:
-          command: yarn install --frozen-lockfile
-          name: yarn install
-      - run:
-          command: yarn e2e:build:android:release
-          name: build
-
-  build-ios:
-    executor: macos_custom
-    steps:
-      - setup_macos_executor
-      - run:
-          command: yarn install --frozen-lockfile
-          name: yarn install
-      - pod_install
-      - run:
-          command: yarn e2e:build:ios:release
-          name: build
 
   e2e-ios:
     executor: macos_custom
