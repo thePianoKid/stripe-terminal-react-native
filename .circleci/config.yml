@@ -287,12 +287,6 @@ workflows:
       - typescript:
           requires:
             - install-dependencies
-      - build-android:
-          requires:
-            - install-dependencies
-      - build-ios:
-          requires:
-            - install-dependencies
       - e2e-android:
           requires:
             - install-dependencies
