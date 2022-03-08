@@ -3,7 +3,7 @@ version: 2.1
 executors:
   linux_js:
     docker:
-      - image: cimg/2.7.5-node
+      - image: cimg/ruby:2.7.5-node
     resource_class: medium+
     environment:
       PATH: '/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
