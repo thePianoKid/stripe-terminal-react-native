@@ -101,6 +101,10 @@ commands:
             - /usr/local/Homebrew/Library/Homebrew/vendor/
           key: |
             brew-cache-{{ arch }}-v1-3
+      - run:
+          name: Install Firebase CLI
+          command: |
+            curl -sL firebase.tools | bash
   android_emulator_start:
     parameters:
       device_name:
