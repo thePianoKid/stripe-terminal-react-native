@@ -221,28 +221,37 @@ jobs:
           name: Integration tests
           command: |
             yarn test
-  e2e-ios:
-    executor: macos_custom
 
+  build-android:
+    executor: macos_custom
     steps:
       - setup_macos_executor
-
-      - ios_simulator_start
-
       - run:
           command: yarn install --frozen-lockfile
           name: yarn install
+      - run:
+          command: yarn e2e:build:android:release
+          name: build
 
+  build-ios:
+    executor: macos_custom
+    steps:
+      - setup_macos_executor
+      - run:
+          command: yarn install --frozen-lockfile
+          name: yarn install
       - pod_install
-
       - run:
           command: yarn e2e:build:ios:release
-          name: build for detox
+          name: build
 
+  e2e-ios:
+    executor: macos_custom
+    steps:
+      - ios_simulator_start
       - run:
           command: yarn e2e:test:ios:release
           name: test detox
-
       - store_artifacts:
           path: ./artifacts
 
@@ -250,16 +259,7 @@ jobs:
     executor:
       name: macos_custom
     steps:
-      - setup_macos_executor
-
-      - run:
-          command: yarn install --frozen-lockfile
-          name: yarn install
       - android_emulator_start
-
-      - run:
-          command: yarn e2e:build:android:release
-          name: build for detox
       - run:
           no_output_timeout: 60m
           command: yarn e2e:test:android:release
@@ -267,7 +267,16 @@ jobs:
       - store_artifacts:
           path: ./artifacts
 
+  deploy-firebase-android:
+    executor: macos_custom
+    steps:
+      - run:
+          name: "Deploy alpha build to Firebase"
+          command: |
+              bundle exec fastlane firebase_app_distribution app_id:$FIREBASE_APP_ID_ANDROID firebase_token:$FIREBASE_TOKEN
+
 workflows:
+  version: 2
   build-and-test:
     jobs:
       - install-dependencies
@@ -277,9 +286,18 @@ workflows:
       - typescript:
           requires:
             - install-dependencies
+      - build-android:
+          requires:
+            - install-dependencies
+      - build-ios:
+          requires:
+            - install-dependencies
       - e2e-android:
           requires:
-            - install-dependencies
+            - build-android
       - e2e-ios:
           requires:
-            - install-dependencies
+            - build-ios
+      - deploy-firebase-android:
+          requires:
+            - build-android
