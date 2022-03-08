@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  ruby: circleci/ruby@1.2.0
+
 executors:
   linux_js:
     docker:
