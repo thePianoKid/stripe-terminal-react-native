@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  macos: circleci/macos@2
+  macos: circleci/macos@2.1.0
 
 executors:
   linux_js:
@@ -127,6 +127,7 @@ commands:
           name: Install Firebase CLI
           command: |
             curl -sL firebase.tools | bash
+      - run: bundle install
 
   android_emulator_start:
     parameters:
@@ -274,16 +275,12 @@ jobs:
     executor: macos_custom
     steps:
       - run:
-          name: "Install rake"
-          command: |
-              gem install rake
-      - setup_macos_executor
-      - build-android
-      - install-firebase-cli
-      - run:
           name: "Deploy alpha build to Firebase"
           command: |
               bundle exec fastlane firebase_app_distribution app_id:$FIREBASE_APP_ID_ANDROID firebase_token:$FIREBASE_TOKEN
+      - setup_macos_executor
+      - build-android
+      - install-firebase-cli
 
 workflows:
   version: 2
