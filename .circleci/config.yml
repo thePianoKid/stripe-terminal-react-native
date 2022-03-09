@@ -274,13 +274,13 @@ jobs:
   deploy-firebase-android:
     executor: macos_custom
     steps:
-      - install-firebase-cli
+      - setup_macos_executor
       - ruby/install-deps
+      - install-firebase-cli
       - run:
           name: "Deploy alpha build to Firebase"
           command: |
               bundle exec fastlane firebase_app_distribution app_id:$FIREBASE_APP_ID_ANDROID firebase_token:$FIREBASE_TOKEN
-      - setup_macos_executor
       - build-android
 
 workflows:
