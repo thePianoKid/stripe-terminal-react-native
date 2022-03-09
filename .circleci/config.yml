@@ -1,9 +1,12 @@
 version: 2.1
 
+orbs:
+  macos: circleci/macos@2
+
 executors:
   linux_js:
     docker:
-      - image: cimg/ruby:2.7.5-node
+      - image: circleci/node:14.15.0
     resource_class: medium+
     environment:
       PATH: '/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
@@ -117,10 +120,16 @@ commands:
             - /usr/local/Homebrew/Library/Homebrew/vendor/
           key: |
             brew-cache-{{ arch }}-v1-3
+      - macos/switch-ruby:
+          version: '2.7.5'
+
+  install-firebase-cli:
+    steps:
       - run:
           name: Install Firebase CLI
           command: |
             curl -sL firebase.tools | bash
+
   android_emulator_start:
     parameters:
       device_name:
@@ -268,6 +277,11 @@ jobs:
     steps:
       - setup_macos_executor
       - build-android
+      - install-firebase-cli
+      - run:
+          name: "Install rake"
+          command: |
+              bundle install rake -v '~> 13.0.6'
       - run:
           name: "Deploy alpha build to Firebase"
           command: |
