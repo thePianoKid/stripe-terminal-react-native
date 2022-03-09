@@ -12,7 +12,7 @@ lane :publish_to_firebase do |options|
     app: options[:app_id].to_s,
     groups: 'terminal-qa',
     release_notes: build_notes,
-    apk_path: 'app/build/outputs/apk/release/app-release.apk',
+    apk_path: 'example/android/app/build/outputs/apk/release/app-release.apk',
     firebase_cli_token: options[:firebase_token].to_s
   )
 end

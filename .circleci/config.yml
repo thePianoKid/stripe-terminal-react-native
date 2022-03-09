@@ -26,25 +26,6 @@ commands:
       - attach_workspace:
           at: ~/project
 
-  build-android:
-    steps:
-      - run:
-          command: yarn install --frozen-lockfile
-          name: yarn install
-      - run:
-          command: yarn e2e:build:android:release
-          name: build
-
-  build-ios:
-    steps:
-      - run:
-          command: yarn install --frozen-lockfile
-          name: yarn install
-      - pod_install
-      - run:
-          command: yarn e2e:build:ios:release
-          name: build
-
   ios_simulator_start:
     steps:
       - run:
@@ -122,12 +103,20 @@ commands:
           key: |
             brew-cache-{{ arch }}-v1-3
 
-  install-firebase-cli:
+  install_android_build_tools:
+    parameters:
+      build_tools_version:
+        type: string
+        default: '30.0.2'
     steps:
       - run:
-          name: Install Firebase CLI
+          name: Install Android Build Tools
+          shell: /bin/bash -e
           command: |
-            curl -sL firebase.tools | bash
+            yes | sdkmanager "platform-tools" "tools" >/dev/null
+            yes | sdkmanager "build-tools;<<parameters.build_tools_version>>" >/dev/null
+            yes | sdkmanager --licenses >/dev/null
+            yes | sdkmanager --list
 
   android_emulator_start:
     parameters:
@@ -137,14 +126,12 @@ commands:
       platform_version:
         type: string
         default: 'android-30'
-      build_tools_version:
-        type: string
-        default: '30.0.2'
       logcat_grep:
         type: string
         default: 'com.example.stripeterminalreactnative'
 
     steps:
+      - install_android_build_tools
       - run:
           name: Install Android Emulator
           shell: /bin/bash -e
@@ -152,7 +139,6 @@ commands:
             yes | sdkmanager "platform-tools" "tools" >/dev/null
             yes | sdkmanager "platforms;<<parameters.platform_version>>" "system-images;<<parameters.platform_version>>;default;x86_64" >/dev/null
             yes | sdkmanager "emulator" --channel=3 >/dev/null
-            yes | sdkmanager "build-tools;<<parameters.build_tools_version>>" >/dev/null
             yes | sdkmanager --licenses >/dev/null
             yes | sdkmanager --list
       - run:
@@ -192,6 +178,7 @@ commands:
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
             echo "Android Virtual Device is now ready."
+
 jobs:
   install-dependencies:
     executor: linux_js
@@ -251,7 +238,13 @@ jobs:
     steps:
       - setup_macos_executor
       - ios_simulator_start
-      - build-ios
+      - run:
+          command: yarn install --frozen-lockfile
+          name: yarn install
+      - pod_install
+      - run:
+          command: yarn e2e:build:ios:release
+          name: build
       - run:
           command: yarn e2e:test:ios:release
           name: test detox
@@ -263,7 +256,12 @@ jobs:
     steps:
       - setup_macos_executor
       - android_emulator_start
-      - build-android
+      - run:
+          command: yarn install --frozen-lockfile
+          name: yarn install
+      - run:
+          command: yarn e2e:build:android:release
+          name: build
       - run:
           no_output_timeout: 60m
           command: yarn e2e:test:android:release
@@ -276,12 +274,21 @@ jobs:
     steps:
       - setup_macos_executor
       - ruby/install-deps
-      - install-firebase-cli
+      - install_android_build_tools
+      - run:
+          name: Install Firebase CLI
+          command: |
+            curl -sL firebase.tools | bash
+      - run:
+          command: yarn install --frozen-lockfile
+          name: yarn install
+      - run:
+          command: yarn example:build:android:release
+          name: build
       - run:
           name: "Deploy alpha build to Firebase"
           command: |
-              bundle exec fastlane firebase_app_distribution app_id:$FIREBASE_APP_ID_ANDROID firebase_token:$FIREBASE_TOKEN
-      - build-android
+              bundle exec fastlane publish_to_firebase app_id:$FIREBASE_APP_ID_ANDROID firebase_token:$FIREBASE_TOKEN
 
 workflows:
   version: 2
