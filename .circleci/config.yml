@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   macos: circleci/macos@2.1.0
+  ruby: circleci/ruby@1.4.0
 
 executors:
   linux_js:
@@ -127,7 +128,6 @@ commands:
           name: Install Firebase CLI
           command: |
             curl -sL firebase.tools | bash
-      - run: bundle install
 
   android_emulator_start:
     parameters:
@@ -275,6 +275,7 @@ jobs:
     executor: macos_custom
     steps:
       - install-firebase-cli
+      - ruby/install-deps
       - run:
           name: "Deploy alpha build to Firebase"
           command: |
