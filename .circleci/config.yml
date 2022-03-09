@@ -274,13 +274,9 @@ jobs:
     executor: macos_custom
     steps:
       - run:
-          name: "Install bundler"
-          command: |
-              gem install bundler
-      - run:
           name: "Install rake"
           command: |
-              bundle install rake -v '~> 13.0.6'
+              gem install rake
       - setup_macos_executor
       - build-android
       - install-firebase-cli
