@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  macos: circleci/macos@2
-
 executors:
   linux_js:
     docker:
@@ -120,8 +117,6 @@ commands:
             - /usr/local/Homebrew/Library/Homebrew/vendor/
           key: |
             brew-cache-{{ arch }}-v1-3
-      - macos/switch-ruby:
-          version: '2.6'
 
   install-firebase-cli:
     steps:
@@ -212,6 +207,14 @@ jobs:
           command: |
             yarn install --cwd example --frozen-lockfile
             yarn install --frozen-lockfile
+      - run:
+          name: "Install bundler"
+          command: |
+              gem install bundler
+      - run:
+          name: "Install rake"
+          command: |
+              bundle install rake -v '~> 13.0.6'
       - save_cache:
           key: dependencies-{{ checksum "package.json" }}
           paths: [node_modules]
@@ -278,10 +281,6 @@ jobs:
       - setup_macos_executor
       - build-android
       - install-firebase-cli
-      - run:
-          name: "Install rake"
-          command: |
-              bundle install rake -v '~> 13.0.6'
       - run:
           name: "Deploy alpha build to Firebase"
           command: |
