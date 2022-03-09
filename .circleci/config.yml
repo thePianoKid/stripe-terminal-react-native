@@ -121,7 +121,7 @@ commands:
           key: |
             brew-cache-{{ arch }}-v1-3
       - macos/switch-ruby:
-          version: '2.7.5'
+          version: '2.6'
 
   install-firebase-cli:
     steps:
