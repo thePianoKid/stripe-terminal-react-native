@@ -210,14 +210,6 @@ jobs:
           command: |
             yarn install --cwd example --frozen-lockfile
             yarn install --frozen-lockfile
-      - run:
-          name: "Install bundler"
-          command: |
-              gem install bundler
-      - run:
-          name: "Install rake"
-          command: |
-              bundle install rake -v '~> 13.0.6'
       - save_cache:
           key: dependencies-{{ checksum "package.json" }}
           paths: [node_modules]
@@ -281,6 +273,14 @@ jobs:
   deploy-firebase-android:
     executor: macos_custom
     steps:
+      - run:
+          name: "Install bundler"
+          command: |
+              gem install bundler
+      - run:
+          name: "Install rake"
+          command: |
+              bundle install rake -v '~> 13.0.6'
       - setup_macos_executor
       - build-android
       - install-firebase-cli
