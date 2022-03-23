@@ -126,7 +126,7 @@ function Root() {
 ```
 
 As a last step, simply call `initialize` method from `useStripeTerminal` hook.
-Please note that `initialize` method must be called from the nested component of `StripeTerminalProvider`.
+Please note that `initialize` method must be called from a nested component under `StripeTerminalProvider`.
 
 ```tsx
 // App.tsx
