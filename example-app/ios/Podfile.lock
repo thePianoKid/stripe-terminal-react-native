@@ -347,10 +347,6 @@ PODS:
   - RNScreens (3.10.2):
     - React-Core
     - React-RCTImage
-  - stripe-terminal-react-native (0.1.0):
-    - React-Core
-    - StripeTerminal (= 2.7.0)
-  - StripeTerminal (2.7.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -406,13 +402,11 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - stripe-terminal-react-native (from `../node_modules/stripe-terminal-react-native`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - fmt
-    - StripeTerminal
 
 EXTERNAL SOURCES:
   boost:
@@ -515,14 +509,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
-  stripe-terminal-react-native:
-    :path: "../node_modules/stripe-terminal-react-native"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
-  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
+  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXApplication: 54fe5bd6268d697771645e8f1aef8b806a65247a
   EXConstants: 88bf79622fbd9b476c96d8ec57fe97ca44fe8e3c
   EXFileSystem: 08a3033ac372b6346becf07839e1ccef26fb1058
@@ -534,7 +526,7 @@ SPEC CHECKSUMS:
   FBLazyVector: de148e8310b8b878db304ceea2fec13f2c02e3a0
   FBReactNativeSpec: 6192956c9e346013d5f1809ba049af720b11c6a4
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   Permission-BluetoothPeripheral: a408e2ba4b43e60c5a4b8b4d442bb8abc93394b2
   Permission-LocationAccuracy: 43d7a6b3d736a90168e9fc7117a721ca44722f83
   Permission-LocationAlways: fbf36cbdcabc3101f1168ad1ec45cfc5a6448cc4
@@ -572,8 +564,6 @@ SPEC CHECKSUMS:
   RNPermissions: 34d678157c800b25b22a488e4d8babb57456e796
   RNReanimated: ee33ab40fa252332a36aeed9d936801ed9700b24
   RNScreens: d6da2b9e29cf523832c2542f47bf1287318b1868
-  stripe-terminal-react-native: 15e612259e8b3d12ffe0975ef186101e1117841c
-  StripeTerminal: 237b759168a00c7f55b97c743cd8a4921866c46b
   Yoga: 32a18c0e845e185f4a2a66ec76e1fd1f958f22fa
 
 PODFILE CHECKSUM: cc4d7f61086bd61b9f178d9a6b7f0096bc63babd
