@@ -1,6 +1,7 @@
 import * as packageJson from '../package.json';
 import { Platform } from 'react-native';
 import { b64EncodeUnicode } from './utils/b64EncodeDecode';
+import { Alert } from 'react-native';
 
 interface ObjectWithError {
   error: any;
@@ -253,6 +254,7 @@ export default class Logger {
     baseTraceObject: Trace,
     response: ObjectWithError
   ): void {
+    Alert.alert('Error!', JSON.stringify(response.error));
     const trace = {
       ...baseTraceObject,
       trace: {
@@ -268,6 +270,7 @@ export default class Logger {
     baseTraceObject: Trace,
     exception: Error
   ): void {
+    Alert.alert('Exception!', JSON.stringify(exception.message));
     const trace = {
       ...baseTraceObject,
       trace: {
