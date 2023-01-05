@@ -382,9 +382,13 @@ workflows:
     jobs:
       - install-dependencies
       - lint:
+          context:
+            - stripe-terminal-react-native-EU-example-app
           requires:
             - install-dependencies
       - typescript:
+          context:
+            - stripe-terminal-react-native-EU-example-app
           requires:
             - install-dependencies
       - unit-js:
