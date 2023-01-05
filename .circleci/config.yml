@@ -409,7 +409,7 @@ workflows:
             - install-dependencies
       - deploy-firebase-android:
           context:
-            - stripe-terminal-react-native-US-example-app
+            - stripe-terminal-react-native-EU-example-app
           name: deploy-firebase-android-us
           requires:
             - install-dependencies
