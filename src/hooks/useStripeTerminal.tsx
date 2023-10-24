@@ -53,6 +53,7 @@ import {
   connectLocalMobileReader,
   setSimulatedCard,
   cancelCollectRefundPaymentMethod,
+  getOfflineStatus,
 } from '../functions';
 import { StripeTerminalContext } from '../components/StripeTerminalContext';
 import { useListener } from './useListener';
@@ -74,6 +75,9 @@ export const {
   START_READER_RECONNECT,
   READER_RECONNECT_SUCCEED,
   READER_RECONNECT_FAIL,
+  OFFLINE_STATUS_CHANGE,
+  PAYMENT_INTENT_FORWARDED,
+  FORWARDING_FAILURE,
 } = NativeModules.StripeTerminalReactNative.getConstants();
 
 const NOT_INITIALIZED_ERROR_MESSAGE =
@@ -131,6 +135,9 @@ export function useStripeTerminal(props?: Props) {
     onDidStartReaderReconnect,
     onDidSucceedReaderReconnect,
     onDidFailReaderReconnect,
+    onDidOfflineStatusChange,
+    onDidPaymentIntentForwarded,
+    onDidForwardingFailure,
   } = props || {};
 
   const _discoverReaders = useCallback(
@@ -262,6 +269,21 @@ export function useStripeTerminal(props?: Props) {
     setConnectedReader(null);
   }, [onDidFailReaderReconnect, setConnectedReader]);
 
+  const didForwardingFailure = useCallback(() => {
+    onDidForwardingFailure?.();
+  }, [onDidForwardingFailure]);
+
+  const didOfflineStatusChange = useCallback(
+    ({ result }: EventResult<Reader.ConnectionStatus>) => {
+      onDidOfflineStatusChange?.(result);
+    },
+    [onDidOfflineStatusChange]
+  );
+
+  const didPaymentIntentForwarded = useCallback(() => {
+    onDidPaymentIntentForwarded?.();
+  }, [onDidPaymentIntentForwarded]);
+
   useListener(REPORT_AVAILABLE_UPDATE, didReportAvailableUpdate);
   useListener(START_INSTALLING_UPDATE, didStartInstallingUpdate);
   useListener(REPORT_UPDATE_PROGRESS, didReportReaderSoftwareUpdateProgress);
@@ -281,6 +303,10 @@ export function useStripeTerminal(props?: Props) {
   useListener(START_READER_RECONNECT, didStartReaderReconnect);
   useListener(READER_RECONNECT_SUCCEED, didSucceedReaderReconnect);
   useListener(READER_RECONNECT_FAIL, didFailReaderReconnect);
+
+  useListener(FORWARDING_FAILURE, didForwardingFailure);
+  useListener(OFFLINE_STATUS_CHANGE, didOfflineStatusChange);
+  useListener(PAYMENT_INTENT_FORWARDED, didPaymentIntentForwarded);
 
   const _initialize = useCallback(async () => {
     if (!initialize || typeof initialize !== 'function') {
@@ -792,6 +818,15 @@ export function useStripeTerminal(props?: Props) {
 
     return response;
   }, [_isInitialized, setLoading]);
+
+  const _getOfflineStatus = useCallback(async () => {
+    if (!_isInitialized()) {
+      console.error(NOT_INITIALIZED_ERROR_MESSAGE);
+      throw Error(NOT_INITIALIZED_ERROR_MESSAGE);
+    }
+    const response = await getOfflineStatus();
+    return response;
+  }, [_isInitialized]);
 
   return {
     initialize: _initialize,
