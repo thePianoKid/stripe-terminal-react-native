@@ -866,6 +866,7 @@ export function useStripeTerminal(props?: Props) {
     connectHandoffReader: _connectHandoffReader,
     connectLocalMobileReader: _connectLocalMobileReader,
     setSimulatedCard: _setSimulatedCard,
+    getOfflineStatus: _getOfflineStatus,
     emitter: emitter,
     discoveredReaders,
     connectedReader,
