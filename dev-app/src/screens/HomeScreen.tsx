@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-root-toast';
 import {
@@ -8,6 +8,8 @@ import {
   Text,
   Image,
   Switch,
+  Platform,
+  Alert,
 } from 'react-native';
 import { colors } from '../colors';
 import { AppContext } from '../AppContext';
@@ -21,6 +23,7 @@ import {
 import {
   OfflineStatus,
   Reader,
+  requestNeededAndroidPermissions,
   useStripeTerminal,
 } from '@stripe/stripe-terminal-react-native';
 
@@ -28,13 +31,19 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const { account } = useContext(AppContext);
   const [simulated, setSimulated] = useState<boolean>(true);
-  const [online, setOnline] = useState<boolean>(true);
+  const [online, setOnline] = useState<boolean>(false);
   const [discoveryMethod, setDiscoveryMethod] =
     useState<Reader.DiscoveryMethod>('bluetoothScan');
-  const { disconnectReader, connectedReader } = useStripeTerminal({
+  const [hasPerms, setHasPerms] = useState<boolean>(false);
+  const {
+    initialize: initStripe,
+    clearCachedCredentials,
+    disconnectReader,
+    connectedReader,
+  } = useStripeTerminal({
     onDidChangeOfflineStatus(status: OfflineStatus) {
       console.log('offline status = ' + status.networkStatus);
-      setOnline(status.networkStatus == 'online' ? true : false);
+      setOnline(status.networkStatus === 'online' ? true : false);
     },
     onDidForwardingFailure(error) {
       let toast = Toast.show(error?.message ? error.message : 'unknown error', {
@@ -77,6 +86,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const loadDiscSettings = async () => {
+      console.log('enter useEffect');
       const savedDisc = await getDiscoveryMethod();
 
       if (!savedDisc) {
@@ -89,6 +99,64 @@ export default function HomeScreen() {
 
     loadDiscSettings();
   }, []);
+
+  useEffect(() => {
+    const initAndClear = async () => {
+      const { error, reader } = await initStripe();
+
+      if (error) {
+        Alert.alert('StripeTerminal init failed', error.message);
+        return;
+      }
+
+      await clearCachedCredentials();
+
+      if (reader) {
+        console.log(
+          'StripeTerminal has been initialized properly and connected to the reader',
+          reader
+        );
+        return;
+      }
+
+      console.log('StripeTerminal has been initialized properly');
+    };
+    if (account?.secretKey && hasPerms) {
+      initAndClear();
+    }
+  }, [account, initStripe, clearCachedCredentials, hasPerms]);
+
+  const handlePermissionsSuccess = useCallback(async () => {
+    setHasPerms(true);
+  }, []);
+
+  useEffect(() => {
+    async function handlePermissions() {
+      try {
+        const { error } = await requestNeededAndroidPermissions({
+          accessFineLocation: {
+            title: 'Location Permission',
+            message: 'Stripe Terminal needs access to your location',
+            buttonPositive: 'Accept',
+          },
+        });
+        if (!error) {
+          handlePermissionsSuccess();
+        } else {
+          console.error(
+            'Location and BT services are required in order to connect to a reader.'
+          );
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (Platform.OS === 'android') {
+      handlePermissions();
+    } else {
+      handlePermissionsSuccess();
+    }
+  }, [handlePermissionsSuccess]);
 
   const renderConnectedContent = (
     <>
@@ -202,7 +270,7 @@ export default function HomeScreen() {
               disabled={!account}
               color={colors.blue}
               onPress={() => {
-                navigation.navigate('RegisterInternetReader');
+                navigation.navigate('RegisterInternetReaderScreen');
               }}
             />
           </List>
