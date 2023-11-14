@@ -22,9 +22,9 @@ const LogListScreen = () => {
 
   const onBackPress = () => {
     const latestLog = logs[logs.length - 1];
-    const latestEvent = latestLog.events[latestLog.events.length - 1];
+    const latestEvent = latestLog?.events[latestLog.events.length - 1];
 
-    if (latestEvent.onBack) {
+    if (latestEvent?.onBack) {
       latestEvent.onBack();
     }
     setCancel(null);
