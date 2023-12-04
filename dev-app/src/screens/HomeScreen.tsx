@@ -34,7 +34,8 @@ export default function HomeScreen() {
   const { disconnectReader, connectedReader } = useStripeTerminal({
     onDidChangeOfflineStatus(status: OfflineStatus) {
       console.log('offline status = ' + status.networkStatus);
-      setOnline(status.networkStatus == 'online' ? true : false);
+      console.log(status);
+      setOnline(status.networkStatus === 'online' ? true : false);
     },
     onDidForwardingFailure(error) {
       console.log('onDidForwardingFailure ' + error?.message);
