@@ -11,7 +11,7 @@ yarn
 ```
 > While it's possible to use [`npm`](https://github.com/npm/cli), the tooling is built around [`yarn`](https://classic.yarnpkg.com/), so you'll have an easier time if you use `yarn` for development.
 
-If the installation fails with `xcrun: error: SDK "iphoneos"`, make sure [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12/) is installed, and the [Xcode command line tools are set correclty](https://stackoverflow.com/questions/68565356/xcrun-error-sdk-iphoneos-cannot-be-located).
+If the installation fails with `xcrun: error: SDK "iphoneos"`, make sure [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12/) is installed, and the [Xcode command line tools are set correctly](https://stackoverflow.com/questions/68565356/xcrun-error-sdk-iphoneos-cannot-be-located).
 
 
 While developing, you can run the [example app](/example-app/) to test your changes. Any changes you make in your library's JavaScript code will be reflected in the example app without a rebuild. If you change any native code, then you'll need to rebuild the example app.
